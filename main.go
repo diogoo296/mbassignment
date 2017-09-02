@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-  Router()
+  router := &Router { Routes }
+  router.MapRoutes()
   log.Println("Server started!")
   log.Fatal(http.ListenAndServe(":8080", nil))
 }
