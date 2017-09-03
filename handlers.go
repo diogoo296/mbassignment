@@ -7,8 +7,13 @@ import (
   "encoding/json"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Index")
+var mbapi = GetMbApiInstance()
+
+func Balance(w http.ResponseWriter, r *http.Request) {
+  balance := mbapi.getBalance()
+  fmt.Fprintf(w, "Payment: %v\n", balance.Payment)
+  fmt.Fprintf(w, "Type   : %v\n", balance.Type)
+  fmt.Fprintf(w, "Amount : %v"  , balance.Amount)
 }
 
 func Test(w http.ResponseWriter, r *http.Request) {

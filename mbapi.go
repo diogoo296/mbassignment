@@ -33,7 +33,7 @@ func (mbapi mbApi) checkThroughput() {
     }
 }
 
-func (mbapi *mbApi) printBalance() {
+func (mbapi *mbApi) getBalance() *messagebird.Balance {
   mbapi.checkThroughput()
   // Request the balance information, returned as a Balance object.
   balance, err := mbapi.Client.Balance()
@@ -47,10 +47,8 @@ func (mbapi *mbApi) printBalance() {
       }
     }
 
-    return
+    return balance
   }
 
-  log.Println("  payment :", balance.Payment)
-  log.Println("  type    :", balance.Type)
-  log.Println("  amount  :", balance.Amount)
+  return balance
 }

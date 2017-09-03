@@ -11,8 +11,8 @@ type Route struct {
 var Routes = []Route {
   Route {
     "GET",
-    "/",
-    Index,
+    "/balance",
+    Balance,
   },
   Route {
     "POST",
