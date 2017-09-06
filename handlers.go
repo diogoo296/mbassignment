@@ -4,10 +4,10 @@ import (
   "fmt"
   "log"
   "net/http"
-  "encoding/json"
 )
 
 var mbapi = GetMbApiInstance()
+var validator *Validator
 
 func Balance(w http.ResponseWriter, r *http.Request) {
   balance := mbapi.getBalance()
@@ -16,16 +16,18 @@ func Balance(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Amount : %v"  , balance.Amount)
 }
 
-func Test(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Test")
-  decoder := json.NewDecoder(r.Body)
-  type Payload struct {
-    Username, Password string
-  }
-  var t Payload
-  err := decoder.Decode(&t)
+func SendMessage(w http.ResponseWriter, r *http.Request) {
+  msgPayload, err := validator.DecodeRequestBody(r.Body)
   if err != nil {
-    fmt.Fprintln(w, err)
+    http.Error(w, err.Error(), 400)
+    log.Printf("%#v\n", err)
+    return
   }
-  log.Printf("%#v\n", t)
+  log.Printf("%#v\n", msgPayload)
+  payloadErr := validator.CheckPayload(msgPayload)
+  if (payloadErr != nil) {
+    http.Error(w, payloadErr.Message, 400)
+    log.Printf("%#v\n", payloadErr)
+    return
+  }
 }
