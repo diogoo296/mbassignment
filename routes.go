@@ -16,7 +16,7 @@ var Routes = []Route {
   },
   Route {
     "POST",
-    "/message",
+    "/messages",
     SendMessage,
   },
 }

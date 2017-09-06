@@ -15,7 +15,7 @@ type HttpError struct {
 
 func badRequest(key string) *HttpError {
   return &HttpError{
-    Code: 400, Message: "Bad request", Key: key }
+    Code: 400, Message: "400 bad request", Key: key }
 }
 
 type payload struct {
@@ -30,7 +30,7 @@ func (v *Validator) DecodeRequestBody(body io.ReadCloser) (payload, error) {
   return p, err
 }
 
-func checkRequiredStr(attribute string, key string) *HttpError {
+func (v *Validator) checkRequiredStr(attribute string, key string) *HttpError {
   if attribute == "" {
     return badRequest(key)
   }
@@ -39,15 +39,16 @@ func checkRequiredStr(attribute string, key string) *HttpError {
 
 func (v *Validator) CheckPayload(p payload) *HttpError {
   // Check required attributes
-  if err := checkRequiredStr(p.Recipient, "recipient");
+  if err := v.checkRequiredStr(p.Recipient, "recipient");
   err != nil {
     return err
   }
-  if err := checkRequiredStr(p.Originator, "originator");
+  if err := v.checkRequiredStr(p.Originator, "originator");
   err != nil {
     return err
   }
-  if err := checkRequiredStr(p.Message, "message"); err != nil {
+  if err := v.checkRequiredStr(p.Message, "message");
+  err != nil {
     return err
   }
 
