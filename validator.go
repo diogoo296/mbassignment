@@ -2,6 +2,9 @@ package main
 
 import (
   "io"
+  "regexp"
+  "strconv"
+  "unicode"
   "encoding/json"
 )
 
@@ -30,29 +33,49 @@ func (v *Validator) DecodeRequestBody(body io.ReadCloser) (payload, error) {
   return p, err
 }
 
-func (v *Validator) checkRequiredStr(attribute string, key string) *HttpError {
-  if attribute == "" {
-    return badRequest(key)
+func removePlusSign(phoneNo string) string {
+  if string(phoneNo[0]) == "+" {
+    return phoneNo[1:len(phoneNo)]
   }
-  return nil
+  return phoneNo
 }
+
+func (v *Validator) validPhoneNo(phoneNo string) bool {
+  if _, err := strconv.Atoi(phoneNo); err == nil {
+    return true
+  } else {
+    return false
+  }
+}
+
+var isAlphanumeric = regexp.
+  MustCompile(`^[a-zA-Z0-9]+$`).MatchString
+
+var isPhoneNo = regexp.
+  MustCompile(`^\+?[0-9]+$`).MatchString
 
 func (v *Validator) CheckPayload(p payload) *HttpError {
   // Check required attributes
-  if err := v.checkRequiredStr(p.Recipient, "recipient");
-  err != nil {
-    return err
+  if p.Recipient == "" {
+    return badRequest("recipient")
   }
-  if err := v.checkRequiredStr(p.Originator, "originator");
-  err != nil {
-    return err
+  if p.Originator == "" {
+    return badRequest("originator")
   }
-  if err := v.checkRequiredStr(p.Message, "message");
-  err != nil {
-    return err
+  if p.Message == "" {
+    return badRequest("message")
   }
 
-  // Check phone numbers
+  // Check recipient
+  if !isPhoneNo(p.Recipient) {
+    return badRequest("recipient")
+  }
+  // Check originator string or phone number
+  if (!isAlphanumeric(p.Originator) && !isPhoneNo(p.Originator)) ||
+  (isAlphanumeric(p.Originator) && len(p.Originator) > 11 && 
+  !isPhoneNo(p.Originator)) {
+    return badRequest("originator")
+  }
 
   return nil
 }
