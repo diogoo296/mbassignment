@@ -6,6 +6,20 @@ import (
   "net/http"
 )
 
+type Route struct {
+  Method  string
+  Pattern string
+  Handler http.HandlerFunc
+}
+
+var Routes = []Route {
+  Route {
+    "POST",
+    "/messages",
+    SendMessage,
+  },
+}
+
 type Router struct {
   Routes []Route
 }
@@ -19,7 +33,7 @@ func (router *Router) MapRoutes() {
     for _, route := range router.Routes {
       if url == route.Pattern && r.Method == route.Method {
         found = true
-        route.Handler(w, r)
+        route.Handler.ServeHTTP(w, r)
       }
     }
 
