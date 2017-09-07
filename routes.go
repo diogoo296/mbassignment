@@ -10,11 +10,6 @@ type Route struct {
 
 var Routes = []Route {
   Route {
-    "GET",
-    "/balance",
-    Balance,
-  },
-  Route {
     "POST",
     "/messages",
     SendMessage,

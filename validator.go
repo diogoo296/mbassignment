@@ -4,7 +4,6 @@ import (
   "io"
   "regexp"
   "strconv"
-  "unicode"
   "encoding/json"
 )
 
@@ -21,14 +20,14 @@ func badRequest(key string) *HttpError {
     Code: 400, Message: "400 bad request", Key: key }
 }
 
-type payload struct {
+type Payload struct {
   Recipient   string
   Originator  string
   Message     string
 }
 
-func (v *Validator) DecodeRequestBody(body io.ReadCloser) (payload, error) {
-  var p payload
+func (v *Validator) DecodeRequestBody(body io.ReadCloser) (Payload, error) {
+  var p Payload
   err := json.NewDecoder(body).Decode(&p)
   return p, err
 }
@@ -54,7 +53,7 @@ var isAlphanumeric = regexp.
 var isPhoneNo = regexp.
   MustCompile(`^\+?[0-9]+$`).MatchString
 
-func (v *Validator) CheckPayload(p payload) *HttpError {
+func (v *Validator) CheckPayload(p Payload) *HttpError {
   // Check required attributes
   if p.Recipient == "" {
     return badRequest("recipient")

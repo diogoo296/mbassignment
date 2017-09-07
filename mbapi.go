@@ -28,27 +28,16 @@ func GetMbApiInstance() *mbApi {
 func (mbapi mbApi) checkThroughput() {
     diff := time.Since(mbapi.LastRequest)
     if diff.Seconds() < 1.0 {
-      log.Printf("Sleep:", diff.Seconds())
+      log.Printf("Sleep (ms):", diff.Seconds() * 1000)
       time.Sleep(diff)
     }
 }
 
-func (mbapi *mbApi) getBalance() *messagebird.Balance {
+func (mbapi *mbApi) SendMessage(p Payload) (
+*messagebird.Message, error) {
   mbapi.checkThroughput()
-  // Request the balance information, returned as a Balance object.
-  balance, err := mbapi.Client.Balance()
+  msg, err := mbapi.Client.NewMessage(
+    p.Originator, []string{p.Recipient}, p.Message, nil)
   mbapi.LastRequest = time.Now()
-
-  if err != nil {
-    // messagebird.ErrResponse means custom JSON errors.
-    if err == messagebird.ErrResponse {
-      for _, mbError := range balance.Errors {
-        log.Printf("Error: %#v\n", mbError)
-      }
-    }
-
-    return balance
-  }
-
-  return balance
+  return msg, err
 }
