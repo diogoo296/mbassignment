@@ -10,29 +10,36 @@ var mbapi = GetMbApiInstance()
 var validator *Validator
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {
-  payload, err := validator.DecodeRequestBody(r.Body)
-  if err != nil {
+  // Decode payload
+  var payload Payload
+  if err := json.NewDecoder(r.Body).Decode(&payload);
+  err != nil {
     http.Error(w, err.Error(), 400)
     log.Printf("%#v\n", err)
     return
   }
 
-  payloadErr := validator.CheckPayload(payload)
-  if (payloadErr != nil) {
-    http.Error(w, payloadErr.Message, 400)
-    log.Printf("%#v\n", payloadErr)
+  // Validate payload
+  if err := validator.CheckPayload(payload); err != nil {
+    http.Error(w, err.Message, err.Code)
+    log.Printf("%#v\n", err)
     return
   }
 
-  msg, mbErr := mbapi.SendMessage(payload)
+  // Split message
+  if len(payload.Message) > 160 {
+  }
+
+  // Send message
+  msg, err := mbapi.SendMessage(payload)
   if err != nil {
     http.Error(w, "500 internal server error", 500)
-    log.Printf("%#v\n", mbErr)
+    log.Printf("%#v\n", err)
     return
   }
 
-  err = json.NewEncoder(w).Encode(msg)
-  if err != nil {
+  // Write reply
+  if err := json.NewEncoder(w).Encode(msg); err != nil {
     http.Error(w, "500 internal server error", 500)
     log.Printf("%#v\n", err)
   }

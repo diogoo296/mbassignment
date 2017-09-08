@@ -1,22 +1,15 @@
 package main
 
-import (
-  "io"
-  "regexp"
-  "strconv"
-  "encoding/json"
-)
+import "regexp"
 
-type Validator struct {}
-
-type HttpError struct {
+type httpError struct {
   Code    int
   Message string
   Key     string
 }
 
-func badRequest(key string) *HttpError {
-  return &HttpError{
+func badRequest(key string) *httpError {
+  return &httpError{
     Code: 400, Message: "400 bad request", Key: key }
 }
 
@@ -26,34 +19,17 @@ type Payload struct {
   Message     string
 }
 
-func (v *Validator) DecodeRequestBody(body io.ReadCloser) (Payload, error) {
-  var p Payload
-  err := json.NewDecoder(body).Decode(&p)
-  return p, err
+type Validator struct {}
+
+func (v *Validator) isAlphanum(str string) bool {
+  return regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(str)
 }
 
-func removePlusSign(phoneNo string) string {
-  if string(phoneNo[0]) == "+" {
-    return phoneNo[1:len(phoneNo)]
-  }
-  return phoneNo
+func (v *Validator) isPhoneNo(str string) bool {
+  return regexp.MustCompile(`^\+?[0-9]+$`).MatchString(str)
 }
 
-func (v *Validator) validPhoneNo(phoneNo string) bool {
-  if _, err := strconv.Atoi(phoneNo); err == nil {
-    return true
-  } else {
-    return false
-  }
-}
-
-var isAlphanumeric = regexp.
-  MustCompile(`^[a-zA-Z0-9]+$`).MatchString
-
-var isPhoneNo = regexp.
-  MustCompile(`^\+?[0-9]+$`).MatchString
-
-func (v *Validator) CheckPayload(p Payload) *HttpError {
+func (v *Validator) CheckPayload(p Payload) *httpError {
   // Check required attributes
   if p.Recipient == "" {
     return badRequest("recipient")
@@ -66,13 +42,13 @@ func (v *Validator) CheckPayload(p Payload) *HttpError {
   }
 
   // Check recipient
-  if !isPhoneNo(p.Recipient) {
+  if !v.isPhoneNo(p.Recipient) {
     return badRequest("recipient")
   }
   // Check originator string or phone number
-  if (!isAlphanumeric(p.Originator) && !isPhoneNo(p.Originator)) ||
-  (isAlphanumeric(p.Originator) && len(p.Originator) > 11 && 
-  !isPhoneNo(p.Originator)) {
+  if (!v.isAlphanum(p.Originator) && !v.isPhoneNo(p.Originator)) ||
+  (v.isAlphanum(p.Originator) && len(p.Originator) > 11 && 
+  !v.isPhoneNo(p.Originator)) {
     return badRequest("originator")
   }
 
