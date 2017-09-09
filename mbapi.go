@@ -17,9 +17,12 @@ var once sync.Once
 
 func GetMbApiInstance() *mbApi {
   once.Do(func() {
-    instance = &mbApi{
-      LastRequest: time.Now().AddDate(0, 0, -1),
-      Client: messagebird.New(MB_API_KEY),
+    config := LoadConfig()
+    if config != nil {
+      instance = &mbApi{
+        LastRequest: time.Now().AddDate(0, 0, -1),
+        Client: messagebird.New(config.MbApiKey[GetEnv()]),
+      }
     }
   })
   return instance
