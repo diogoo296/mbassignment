@@ -3,15 +3,10 @@ package main
 import (
   "fmt"
   "log"
-  "math"
   "sync"
   "time"
+  "math/rand"
   "github.com/messagebird/go-rest-api"
-)
-
-const (
-  SMS_MAX_LEN  = 160
-  CSMS_MAX_LEN = 153
 )
 
 type message struct {
@@ -41,11 +36,11 @@ func GetMbApiInstance() *mbApi {
 }
 
 func (mbapi mbApi) checkThroughput() {
-    diff := time.Since(mbapi.LastRequest)
-    if diff.Seconds() < 1.0 {
-      log.Printf("Sleep (ms): %f", diff.Seconds() * 1000)
-      time.Sleep(diff)
-    }
+  diff := time.Since(mbapi.LastRequest)
+  if diff.Seconds() < 1.0 {
+    log.Printf("Sleep (ms): %f", diff.Seconds() * 1000)
+    time.Sleep(diff)
+  }
 }
 
 func buildUDH(refNo, total, idx int) string {
@@ -57,32 +52,35 @@ func strHex(str string) string {
 }
 
 func (mbap mbApi) splitMessage(body string) []message {
-  bodyLen := len(body)
+  tHelper := TextHelperInit(body)
+  params := &messagebird.MessageParams{ DataCoding: "auto" }
+  log.Printf("%#v", tHelper)
 
-  if bodyLen > SMS_MAX_LEN {
+  if tHelper.NumParts > 1 {
     var messages []message
-    total := int(
-      math.Ceil(float64(bodyLen) / float64(CSMS_MAX_LEN)))
+    refNo := rand.Intn(256)
+    params.Type = "binary"
 
-    for i := 0; i < total; i++ {
-      start := i * CSMS_MAX_LEN
-      end   := (i + 1) * CSMS_MAX_LEN
-      if end > bodyLen {
-        end = bodyLen
+    for i := 0; i < tHelper.NumParts; i++ {
+      start := i * tHelper.PartSize
+      end   := (i + 1) * tHelper.PartSize
+      if end > tHelper.Size {
+        end = tHelper.Size
       }
 
-      typeDetails := make(messagebird.TypeDetails)
-      typeDetails["udh"] = buildUDH(1, total, i+1)
-      messages = append(
-        messages, message{Body: strHex(body[start:end]),
-        //messages, message{Body: body[start:end],
-        Params: &messagebird.MessageParams{
-          Type: "binary", TypeDetails: typeDetails }},
-      )
+      params.TypeDetails = make(messagebird.TypeDetails)
+      params.TypeDetails["udh"] = buildUDH(
+        refNo, tHelper.NumParts, i+1)
+      messages = append(messages, message{
+        Body: strHex(body[start:end]), Params: params,
+        //Body: body[start:end]
+      })
     }
+
     return messages
   }
-  return []message{message{Body: body, Params: nil}}
+
+  return []message{ message{ Body: body, Params: params } }
 }
 
 func (mbapi *mbApi) SendMessage(p Payload) (

@@ -3,7 +3,6 @@ package main
 import (
   "log"
   "net/http"
-  "unicode/utf8"
   "encoding/json"
 )
 
@@ -26,10 +25,6 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
     log.Printf("%#v\n", err)
     return
   }
-
-  log.Printf("#Message: %#v", len(payload.Message))
-  log.Printf("#Runes:   %#v",
-    utf8.RuneCountInString(payload.Message))
 
   // Send message
   msg, err := mbapi.SendMessage(payload)
