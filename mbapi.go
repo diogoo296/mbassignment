@@ -51,28 +51,23 @@ func strHex(str string) string {
   return fmt.Sprintf("%02x", str)
 }
 
-func (mbap mbApi) splitMessage(body string) []message {
+func (mbapi mbApi) splitMessage(body string) []message {
   tHelper := TextHelperInit(body)
-  params := &messagebird.MessageParams{ DataCoding: "auto" }
   log.Printf("%#v", tHelper)
 
   if tHelper.NumParts > 1 {
     var messages []message
     refNo := rand.Intn(256)
-    params.Type = "binary"
 
     for i := 0; i < tHelper.NumParts; i++ {
-      start := i * tHelper.PartSize
-      end   := (i + 1) * tHelper.PartSize
-      if end > tHelper.Size {
-        end = tHelper.Size
-      }
-
+      params := &messagebird.MessageParams{
+        DataCoding: "auto", Type: "binary" }
       params.TypeDetails = make(messagebird.TypeDetails)
       params.TypeDetails["udh"] = buildUDH(
         refNo, tHelper.NumParts, i+1)
+
       messages = append(messages, message{
-        Body: strHex(body[start:end]), Params: params,
+        Body: strHex(tHelper.Parts[i]), Params: params,
         //Body: body[start:end]
       })
     }
@@ -80,6 +75,7 @@ func (mbap mbApi) splitMessage(body string) []message {
     return messages
   }
 
+  params := &messagebird.MessageParams{ DataCoding: "auto" }
   return []message{ message{ Body: body, Params: params } }
 }
 

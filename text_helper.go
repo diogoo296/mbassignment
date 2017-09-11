@@ -1,6 +1,6 @@
 package main
 
-import "math"
+import "fmt"
 
 const (
   PLAIN_SMS_MAX_LEN    = 160
@@ -13,8 +13,9 @@ type gsmTable []rune
 
 type TextHelper struct {
   Body      string
+  Parts     []string
   PlainText bool
-  Size      int
+  NumChars  int
   NumParts  int
   PartSize  int
 }
@@ -22,23 +23,33 @@ type TextHelper struct {
 func TextHelperInit(msg string) *TextHelper {
   th := &TextHelper{ Body: msg, NumParts: 1 }
 
+  th.checkIfPlainText()  // Must be called first
   th.countChars()
-  th.checkIfPlainText()
   th.setPartSize()
-  th.countParts()
+  th.splitBody()
 
   return th
+}
+
+func (th *TextHelper) checkIfPlainText() {
+  for _, r := range th.Body {
+    if !specialChars.contains(r) && !chars.contains(r) {
+      th.PlainText = false
+      return
+    }
+  }
+  th.PlainText = true
 }
 
 func (th *TextHelper) setPartSize() {
   if th.PlainText {
     th.PartSize = PLAIN_SMS_MAX_LEN
-    if th.Size > th.PartSize {
+    if th.NumChars > th.PartSize {
       th.PartSize = PLAIN_CSMS_MAX_LEN
     }
   } else {
     th.PartSize = UNICODE_SMS_MAX_LEN
-    if th.Size > th.PartSize {
+    if th.NumChars > th.PartSize {
       th.PartSize = PLAIN_CSMS_MAX_LEN
     }
   }
@@ -46,27 +57,45 @@ func (th *TextHelper) setPartSize() {
 
 func (th *TextHelper) countChars() {
   for _, r := range th.Body {
-    if escapes.contains(r) {
-      th.Size += 2
+    if specialChars.contains(r) && th.PlainText {
+      th.NumChars += 2
     } else {
-      th.Size += 1
+      th.NumChars += 1
     }
   }
 }
 
-func (th *TextHelper) countParts() {
-  th.NumParts = int(
-    math.Ceil(float64(th.Size) / float64(th.PartSize)))
+func (th *TextHelper) concat(str string, r rune) string {
+  return fmt.Sprintf("%s%s", str, string(r))
 }
 
-func (th *TextHelper) checkIfPlainText() {
+func (th *TextHelper) splitBody() {
+  total, part := 0, ""
+
   for _, r := range th.Body {
-    if !escapes.contains(r) && !chars.contains(r) {
-      th.PlainText = false
-      return
+    if specialChars.contains(r) && th.PlainText {
+      total += 2
+    } else {
+      total += 1
+    }
+
+    if total == th.PartSize {
+      th.Parts = append(th.Parts, th.concat(part, r))
+      part = ""
+      total = 0
+    } else if total > th.PartSize {
+      th.Parts = append(th.Parts, part)
+      part = string(r)
+      total = 0
+    } else {
+      part = th.concat(part, r)
     }
   }
-  th.PlainText = true
+
+  if part != "" {
+      th.Parts = append(th.Parts, part)
+  }
+  th.NumParts = len(th.Parts)
 }
 
 func (table gsmTable) contains(r rune) bool {
@@ -78,7 +107,7 @@ func (table gsmTable) contains(r rune) bool {
   return false
 }
 
-var escapes = gsmTable{
+var specialChars = gsmTable{
   0x000C, /* FORM FEED */
   0x005E, /* CIRCUMFLEX ACCENT */
   0x007B, /* LEFT CURLY BRACKET */
