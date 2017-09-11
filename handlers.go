@@ -25,17 +25,21 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
     log.Printf("%#v\n", err)
     return
   }
+  log.Printf("msg: %s", payload.Message)
 
   // Send message
-  msg, err := mbapi.SendMessage(payload)
+  msgs, err := mbapi.SendMessage(payload)
   if err != nil {
     http.Error(w, "500 internal server error", 500)
     log.Printf("%#v\n", err)
+    for _, msg := range msgs {
+      log.Printf("%#v\n", msg.Errors)
+    }
     return
   }
 
   // Write reply
-  if err := json.NewEncoder(w).Encode(msg); err != nil {
+  if err := json.NewEncoder(w).Encode(msgs); err != nil {
     http.Error(w, "500 internal server error", 500)
     log.Printf("%#v\n", err)
   }

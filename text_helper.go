@@ -33,7 +33,7 @@ func TextHelperInit(msg string) *TextHelper {
 
 func (th *TextHelper) checkIfPlainText() {
   for _, r := range th.Body {
-    if !specialChars.contains(r) && !chars.contains(r) {
+    if !specialRunes.contains(r) && !gsmRunes.contains(r) {
       th.PlainText = false
       return
     }
@@ -50,14 +50,14 @@ func (th *TextHelper) setPartSize() {
   } else {
     th.PartSize = UNICODE_SMS_MAX_LEN
     if th.NumChars > th.PartSize {
-      th.PartSize = PLAIN_CSMS_MAX_LEN
+      th.PartSize = UNICODE_CSMS_MAX_LEN
     }
   }
 }
 
 func (th *TextHelper) countChars() {
   for _, r := range th.Body {
-    if specialChars.contains(r) && th.PlainText {
+    if specialRunes.contains(r) && th.PlainText {
       th.NumChars += 2
     } else {
       th.NumChars += 1
@@ -73,7 +73,7 @@ func (th *TextHelper) splitBody() {
   total, part := 0, ""
 
   for _, r := range th.Body {
-    if specialChars.contains(r) && th.PlainText {
+    if specialRunes.contains(r) && th.PlainText {
       total += 2
     } else {
       total += 1
@@ -107,7 +107,7 @@ func (table gsmTable) contains(r rune) bool {
   return false
 }
 
-var specialChars = gsmTable{
+var specialRunes = gsmTable{
   0x000C, /* FORM FEED */
   0x005E, /* CIRCUMFLEX ACCENT */
   0x007B, /* LEFT CURLY BRACKET */
@@ -120,7 +120,7 @@ var specialChars = gsmTable{
   0x20AC, /* EURO SIGN */
 }
 
-var chars = gsmTable{
+var gsmRunes = gsmTable{
   /* 0x00 */ 0x0040, /* COMMERCIAL AT */
   /* 0x01 */ 0x00A3, /* POUND SIGN */
   /* 0x02 */ 0x0024, /* DOLLAR SIGN */
