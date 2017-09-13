@@ -47,36 +47,36 @@ func buildUDH(refNo, total, idx int) string {
   return fmt.Sprintf("050003%02x%02x%02x", refNo, total, idx)
 }
 
-func strHex(str string) string {
-  return fmt.Sprintf("%02x", str)
-}
-
 func (mbapi mbApi) splitMessage(body string) []message {
   tHelper := TextHelperInit(body)
   log.Printf("%#v", tHelper)
 
-  if tHelper.NumParts > 1 {
-    var messages []message
-    refNo := rand.Intn(256)
-
-    for i := 0; i < tHelper.NumParts; i++ {
-      params := &messagebird.MessageParams{
-        DataCoding: "auto", Type: "binary" }
-      params.TypeDetails = make(messagebird.TypeDetails)
-      params.TypeDetails["udh"] = buildUDH(
-        refNo, tHelper.NumParts, i+1)
-
-      messages = append(messages, message{
-        Body: strHex(tHelper.Parts[i]), Params: params,
-        //Body: body[start:end]
-      })
-    }
-
-    return messages
+  if tHelper.NumParts == 1 {
+    params := &messagebird.MessageParams{ DataCoding: "auto" }
+    return []message{ message{ Body: body, Params: params } }
   }
 
-  params := &messagebird.MessageParams{ DataCoding: "auto" }
-  return []message{ message{ Body: body, Params: params } }
+  var messages []message
+  refNo := rand.Intn(256)
+
+  for i := 0; i < tHelper.NumParts; i++ {
+    typeDetails := make(messagebird.TypeDetails)
+    typeDetails["udh"] = buildUDH(
+      refNo, tHelper.NumParts, i+1,
+    )
+
+    params := &messagebird.MessageParams{
+      Type: "binary",
+      DataCoding: "auto",
+      TypeDetails: typeDetails,
+    }
+
+    messages = append(messages, message{
+      Body: tHelper.Parts[i], Params: params,
+    })
+  }
+
+  return messages
 }
 
 func (mbapi *mbApi) SendMessage(p Payload) (
@@ -88,9 +88,10 @@ func (mbapi *mbApi) SendMessage(p Payload) (
     mbapi.checkThroughput()
     row, err := mbapi.Client.NewMessage(
       p.Originator, []string{p.Recipient},
-      msg.Body, msg.Params)
-
+      msg.Body, msg.Params,
+    )
     mbapi.LastRequest = time.Now()
+
     if err != nil {
       return result, err
     }

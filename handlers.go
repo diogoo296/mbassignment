@@ -25,7 +25,6 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
     log.Printf("%#v\n", err)
     return
   }
-  log.Printf("msg: %s", payload.Message)
 
   // Send message
   msgs, err := mbapi.SendMessage(payload)
