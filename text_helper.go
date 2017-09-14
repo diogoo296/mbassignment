@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+  "fmt"
+  "errors"
+)
 
 const (
   PLAIN_SMS_MAX_LEN    = 160
@@ -20,18 +23,23 @@ type TextHelper struct {
   PartSize  int
 }
 
-func TextHelperInit(msg string) *TextHelper {
+func TextHelperInit(msg string) (*TextHelper, error) {
   th := &TextHelper{ Body: msg, NumParts: 1 }
 
-  th.checkIfPlainText()  // Must be called first
+  th.setPlainText()  // Must be called first
   th.countChars()
   th.setPartSize()
   th.splitBody()
 
-  return th
+  if th.NumParts > 255 {
+    return nil, errors.New(
+      "Message number of parts is above 255")
+  }
+
+  return th, nil
 }
 
-func (th *TextHelper) checkIfPlainText() {
+func (th *TextHelper) setPlainText() {
   for _, r := range th.Body {
     if !specialRunes.contains(r) && !gsmRunes.contains(r) {
       th.PlainText = false

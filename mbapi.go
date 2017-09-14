@@ -47,13 +47,18 @@ func buildUDH(refNo, total, idx int) string {
   return fmt.Sprintf("050003%02x%02x%02x", refNo, total, idx)
 }
 
-func (mbapi mbApi) splitMessage(body string) []message {
-  tHelper := TextHelperInit(body)
+func (mbapi mbApi) splitMessage(body string) (
+[]message, error) {
+  tHelper, err := TextHelperInit(body)
+  if err != nil {
+    return nil, err
+  }
   log.Printf("%#v", tHelper)
 
   if tHelper.NumParts == 1 {
     params := &messagebird.MessageParams{ DataCoding: "auto" }
-    return []message{ message{ Body: body, Params: params } }
+    return []message{
+      message{ Body: body, Params: params } }, nil
   }
 
   var messages []message
@@ -76,13 +81,17 @@ func (mbapi mbApi) splitMessage(body string) []message {
     })
   }
 
-  return messages
+  return messages, nil
 }
 
 func (mbapi *mbApi) SendMessage(p Payload) (
 []*messagebird.Message, error) {
-  messages := mbapi.splitMessage(p.Message)
   var result []*messagebird.Message
+  messages, err := mbapi.splitMessage(p.Message)
+
+  if err != nil {
+    return nil, err
+  }
 
   for _, msg := range messages {
     mbapi.checkThroughput()
