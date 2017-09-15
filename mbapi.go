@@ -3,7 +3,6 @@ package main
 import (
   "fmt"
   "log"
-  "sync"
   "time"
   "math/rand"
   "github.com/messagebird/go-rest-api"
@@ -21,21 +20,19 @@ type mbApi struct {
   Client   *messagebird.Client
 }
 
-var instance *mbApi
-var once sync.Once
-
-func GetMbApiInstance() *mbApi {
-  once.Do(func() {
-    config := LoadConfig()
-    if config != nil {
-      instance = &mbApi{
-        Throttle: time.Tick(time.Second * THROUGHPUT),
-        Client: messagebird.New(config.MbApiKey[GetEnv()]),
-      }
+func initMbApi() *mbApi {
+  var mbapi *mbApi
+  config := LoadConfig()
+  if config != nil {
+    mbapi = &mbApi{
+      Throttle: time.Tick(time.Second * THROUGHPUT),
+      Client: messagebird.New(config.MbApiKey[GetEnv()]),
     }
-  })
-  return instance
+  }
+  return mbapi
 }
+
+var MbApiInstance *mbApi = initMbApi()
 
 func buildUDH(refNo, total, idx int) string {
   return fmt.Sprintf("050003%02x%02x%02x", refNo, total, idx)
@@ -89,6 +86,7 @@ func (mbapi *mbApi) SendMessage(p Payload) (
 
   for _, msg := range messages {
     <-mbapi.Throttle
+    log.Printf("Request: %s", time.Now().String())
     row, err := mbapi.Client.NewMessage(
       p.Originator, []string{p.Recipient},
       msg.Body, msg.Params,

@@ -7,10 +7,8 @@ import (
   "io/ioutil"
 )
 
-var mbapi *mbApi = GetMbApiInstance()
-
 func expectNMessages(p Payload, n int, t *testing.T) {
-  result, err := mbapi.SendMessage(p)
+  result, err := MbApiInstance.SendMessage(p)
   if err != nil {
     t.Errorf("Expected error not to be nil: %#v", err)
   }
@@ -28,7 +26,7 @@ func TestTotalSentMessages(t *testing.T) {
   }
 
   // Test non existent phone number in a valid format
-  if result, err := mbapi.SendMessage(p); err == nil {
+  if result, err := MbApiInstance.SendMessage(p); err == nil {
     t.Errorf(
       "Expected error not to be nil. Result: %#v", result)
   }
@@ -50,7 +48,7 @@ func TestApiThroughput(t *testing.T) {
     Message: strings.Repeat("a", 1400), // 10 messages
   }
 
-  result, _ := mbapi.SendMessage(p);
+  result, _ := MbApiInstance.SendMessage(p);
   for i := 1; i < len(result); i++ {
     if diff := result[i].CreatedDatetime.Sub(
       *result[i-1].CreatedDatetime).Seconds();
