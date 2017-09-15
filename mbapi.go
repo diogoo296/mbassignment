@@ -9,14 +9,16 @@ import (
   "github.com/messagebird/go-rest-api"
 )
 
+const THROUGHPUT = 1  // in seconds
+
 type message struct {
-  Body string
+  Body   string
   Params *messagebird.MessageParams
 }
 
 type mbApi struct {
-  LastRequest time.Time
-  Client *messagebird.Client
+  Throttle <-chan time.Time
+  Client   *messagebird.Client
 }
 
 var instance *mbApi
@@ -27,20 +29,12 @@ func GetMbApiInstance() *mbApi {
     config := LoadConfig()
     if config != nil {
       instance = &mbApi{
-        LastRequest: time.Now().AddDate(0, 0, -1),
+        Throttle: time.Tick(time.Second * THROUGHPUT),
         Client: messagebird.New(config.MbApiKey[GetEnv()]),
       }
     }
   })
   return instance
-}
-
-func (mbapi mbApi) checkThroughput() {
-  diff := time.Since(mbapi.LastRequest)
-  if diff.Seconds() < 1.0 {
-    log.Printf("Sleep (ms): %f", diff.Seconds() * 1000)
-    time.Sleep(diff)
-  }
 }
 
 func buildUDH(refNo, total, idx int) string {
@@ -94,17 +88,16 @@ func (mbapi *mbApi) SendMessage(p Payload) (
   }
 
   for _, msg := range messages {
-    mbapi.checkThroughput()
+    <-mbapi.Throttle
     row, err := mbapi.Client.NewMessage(
       p.Originator, []string{p.Recipient},
       msg.Body, msg.Params,
     )
-    mbapi.LastRequest = time.Now()
+    result = append(result, row)
 
     if err != nil {
       return result, err
     }
-    result = append(result, row)
   }
 
   return result, nil

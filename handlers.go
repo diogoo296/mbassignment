@@ -2,16 +2,17 @@ package main
 
 import (
   "log"
+  "time"
   "net/http"
   "encoding/json"
 )
 
-var mbapi = GetMbApiInstance()
-var validator *Validator
-
 func SendMessage(w http.ResponseWriter, r *http.Request) {
   // Decode payload
+  var mbapi = GetMbApiInstance()
+  var validator *Validator
   var payload Payload
+
   if err := json.NewDecoder(r.Body).Decode(&payload);
   err != nil {
     http.Error(w, err.Error(), 400)
@@ -38,7 +39,11 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
   }
 
   // Write reply
-  if err := json.NewEncoder(w).Encode(msgs); err != nil {
+  var times []*time.Time
+  for _, msg := range msgs {
+    times = append(times, msg.CreatedDatetime)
+  }
+  if err := json.NewEncoder(w).Encode(times); err != nil {
     http.Error(w, "500 internal server error", 500)
     log.Printf("%#v\n", err)
   }

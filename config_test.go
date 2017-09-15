@@ -3,9 +3,12 @@ package main
 import (
   "os"
   "testing"
+  "log"
+  "io/ioutil"
 )
 
 func TestLoadConfig(t *testing.T) {
+  log.SetOutput(ioutil.Discard)
   config := LoadConfig()
   if config == nil {
     t.Error("Expected config to not be nil")
@@ -21,6 +24,7 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestGetEnv(t *testing.T) {
+  log.SetOutput(ioutil.Discard)
   env := os.Getenv("ENV")
   funcEnv := GetEnv()
   if env == "production" && funcEnv != "production" {
