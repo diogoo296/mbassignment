@@ -4,7 +4,6 @@ import (
   "fmt"
   "log"
   "time"
-  "math/rand"
   "github.com/messagebird/go-rest-api"
 )
 
@@ -18,6 +17,7 @@ type message struct {
 type mbApi struct {
   Throttle <-chan time.Time
   Client   *messagebird.Client
+  RefNo    int
 }
 
 func initMbApi() *mbApi {
@@ -27,6 +27,7 @@ func initMbApi() *mbApi {
     mbapi = &mbApi{
       Throttle: time.Tick(time.Second * THROUGHPUT),
       Client: messagebird.New(config.MbApiKey[GetEnv()]),
+      RefNo: 0,
     }
   }
   return mbapi
@@ -38,7 +39,16 @@ func buildUDH(refNo, total, idx int) string {
   return fmt.Sprintf("050003%02x%02x%02x", refNo, total, idx)
 }
 
-func (mbapi mbApi) splitMessage(body string) (
+func (mbapi *mbApi) getRefNo() int {
+  refNo := mbapi.RefNo
+  mbapi.RefNo += 1
+  if mbapi.RefNo > 255 {
+    mbapi.RefNo = 0
+  }
+  return refNo
+}
+
+func (mbapi *mbApi) splitMessage(body string) (
 []message, error) {
   tHelper, err := InitTextHelper(body)
   if err != nil {
@@ -53,7 +63,7 @@ func (mbapi mbApi) splitMessage(body string) (
   }
 
   var messages []message
-  refNo := rand.Intn(256)
+  refNo := mbapi.getRefNo()
 
   for i := 0; i < tHelper.NumParts; i++ {
     typeDetails := make(messagebird.TypeDetails)
