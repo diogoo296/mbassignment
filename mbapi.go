@@ -40,7 +40,7 @@ func buildUDH(refNo, total, idx int) string {
 
 func (mbapi mbApi) splitMessage(body string) (
 []message, error) {
-  tHelper, err := TextHelperInit(body)
+  tHelper, err := InitTextHelper(body)
   if err != nil {
     return nil, err
   }

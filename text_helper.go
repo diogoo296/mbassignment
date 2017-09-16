@@ -23,7 +23,7 @@ type TextHelper struct {
   PartSize  int
 }
 
-func TextHelperInit(msg string) (*TextHelper, error) {
+func InitTextHelper(msg string) (*TextHelper, error) {
   th := &TextHelper{ Body: msg, NumParts: 1 }
 
   th.setPlainText()  // Must be called first

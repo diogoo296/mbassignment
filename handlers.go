@@ -11,6 +11,7 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
   var validator *Validator
   var payload Payload
 
+  // Decode request payload
   if err := json.NewDecoder(r.Body).Decode(&payload);
   err != nil {
     http.Error(w, err.Error(), 400)

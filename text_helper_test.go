@@ -1,4 +1,4 @@
-// Tests TextHelperInit() subfunctions
+// Tests InitTextHelper() subfunctions
 package main
 
 import (
@@ -23,7 +23,7 @@ var veryLongUnicodeMsg string = strings.Repeat("日", 268)
 var wayTooLongUnicodeMsg string = strings.Repeat("日", 17086)
 
 func checkPlainText(msg string, expected bool, t *testing.T) {
-  tHelper, err := TextHelperInit(msg);
+  tHelper, err := InitTextHelper(msg);
   if err != nil {
     t.Errorf("Expected error to be nil: %#v", err)
   } else if tHelper.PlainText != expected {
@@ -43,7 +43,7 @@ func TestSetPlainText(t *testing.T) {
 }
 
 func checkNumChars(msg string, expected int, t *testing.T) {
-  tHelper, err := TextHelperInit(msg);
+  tHelper, err := InitTextHelper(msg);
   if err != nil {
     t.Errorf("Expected error to be nil: %#v", err)
   } else if tHelper.NumChars != expected {
@@ -63,7 +63,7 @@ func TestCountChars(t *testing.T) {
 }
 
 func checkPartSize(msg string, expected int, t *testing.T) {
-  tHelper, err := TextHelperInit(msg);
+  tHelper, err := InitTextHelper(msg);
   if err != nil {
     t.Errorf("Expected error to be nil: %#v", err)
   } else if tHelper.PartSize != expected {
@@ -88,7 +88,7 @@ func TestSetPartSize(t *testing.T) {
 }
 
 func checkNumParts(msg string, expected int, t *testing.T) {
-  tHelper, err := TextHelperInit(msg);
+  tHelper, err := InitTextHelper(msg);
   if err != nil {
     t.Errorf("Expected error to be nil: %#v", err)
   } else if tHelper.NumParts != expected {
@@ -99,7 +99,7 @@ func checkNumParts(msg string, expected int, t *testing.T) {
 }
 
 func expectError(msg string, t *testing.T) {
-  if _, err := TextHelperInit(msg); err == nil {
+  if _, err := InitTextHelper(msg); err == nil {
     t.Error("Expected error to not be nil.")
   }
 }
