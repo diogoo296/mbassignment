@@ -46,6 +46,7 @@ Notice that the application will run in the *development environment* for any `E
 ## How it works
 
 This API has a single route, `/messages`, which makes a **POST** request to MessageBird API at the URI `https://rest.messagebird.com/messages`. This route expects a json payload with the following parameters:
+
 | Parameter  | Type   | Description |
 |------------|--------|-------------|
 | recipient  | string | The recipient msisdn. **Required**. |
