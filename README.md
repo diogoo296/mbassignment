@@ -51,7 +51,7 @@ This API has a single endpoint, `/messages`, which makes a **POST** request to M
 |------------|--------|-------------|
 | recipient  | string | The recipient msisdn. **Required**. |
 | originator | string | The sender of the message. This can be a telephone number (including country code) or an alphanumeric string. In case of an alphanumeric string, the maximum length is 11 characters. **Required**. |
-| message    | string | The body of the SMS message. Can be composed by either GSM 03.38 characters or unicode characters. **Required**. |
+| message    | string | The body of the SMS message. Can be composed by either GSM 03.38 characters or unicode characters and must contain at least one non-whitespace character. **Required**. |
 
 Here is an example of a *curl* request to a running server instance of this API:
 ```
