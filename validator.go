@@ -1,6 +1,9 @@
 package main
 
-import "regexp"
+import (
+  "regexp"
+  "strings"
+)
 
 type httpError struct {
   Code    int
@@ -37,7 +40,7 @@ func (v *Validator) CheckPayload(p Payload) *httpError {
   if p.Originator == "" {
     return badRequest("originator")
   }
-  if p.Message == "" {
+  if strings.TrimSpace(p.Message) == "" {
     return badRequest("message")
   }
 
