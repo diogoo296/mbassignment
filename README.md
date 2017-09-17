@@ -51,7 +51,7 @@ This API has a single route, `/messages`, which makes a **POST** request to Mess
 |------------|--------|-------------|
 | recipient  | string | The recipient msisdn. **Required**. |
 | originator | string | The sender of the message. This can be a telephone number (including country code) or an alphanumeric string. In case of an alphanumeric string, the maximum length is 11 characters. **Required**. |
-| message    | string | The body of the SMS message. **Required**. |
+| message    | string | The body of the SMS message. Can be composed by either GSM 03.38 characters or unicode characters. **Required**. |
 
 Here is an example of a *curl* request to a running server instance of this API:
 ```
@@ -66,6 +66,10 @@ A successful request should receive as a response a MessageBird message object l
 
 ## Characters and message length
 
-Considering the concatenated SMS limitations and differences between GSM 03.38 characters and unicode characters, the number of messages sent (and thus the number of messages charged) follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-).
+Considering the concatenated SMS limitations and differences between GSM 03.38 characters and unicode characters, the number of messages sent follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-).
 
-For more about GSM 03.38 characters and which ones form this set counts as 2 characters in a message, check out [this article](https://support.messagebird.com/hc/en-us/articles/208739765-Which-special-characters-count-as-two-characters-in-a-text-message-).
+For more about GSM 03.38 characters and which ones from this set counts as 2 characters in a message, check out [this article](https://support.messagebird.com/hc/en-us/articles/208739765-Which-special-characters-count-as-two-characters-in-a-text-message-).
+
+## Known issues
+
+* **Concatenated unicode messages:** Even though the SMS UDH seems correct and the message parts respect the maximum size, the concatenated messages are not showing as a single message in the phone when the characters are unicode.
