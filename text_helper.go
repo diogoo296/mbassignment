@@ -115,6 +115,11 @@ func (table gsmTable) contains(r rune) bool {
   return false
 }
 
+/*
+Runes tables: small adaptation of code found at:
+https://github.com/xlab/at/blob/master/pdu/7bit.go#L30
+*/
+// Counts as 2 characters
 var specialRunes = gsmTable{
   0x000C, /* FORM FEED */
   0x005E, /* CIRCUMFLEX ACCENT */
@@ -126,8 +131,10 @@ var specialRunes = gsmTable{
   0x005D, /* RIGHT SQUARE BRACKET */
   0x007C, /* VERTICAL LINE */
   0x20AC, /* EURO SIGN */
+  0x000A, /* LINE FEED */
 }
 
+// Counts as 1 character
 var gsmRunes = gsmTable{
   /* 0x00 */ 0x0040, /* COMMERCIAL AT */
   /* 0x01 */ 0x00A3, /* POUND SIGN */
@@ -139,7 +146,6 @@ var gsmRunes = gsmTable{
   /* 0x07 */ 0x00EC, /* LATIN SMALL LETTER I WITH GRAVE */
   /* 0x08 */ 0x00F2, /* LATIN SMALL LETTER O WITH GRAVE */
   /* 0x09 */ 0x00E7, /* LATIN SMALL LETTER C WITH CEDILLA */
-  /* 0x0A */ 0x000A, /* LINE FEED */
   /* 0x0B */ 0x00D8, /* LATIN CAPITAL LETTER O WITH STROKE */
   /* 0x0C */ 0x00F8, /* LATIN SMALL LETTER O WITH STROKE */
   /* 0x0D */ 0x000D, /* CARRIAGE RETURN */
