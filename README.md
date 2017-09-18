@@ -55,9 +55,9 @@ This API has a single endpoint, `/messages`, which makes a **POST** request to M
 
 Here is an example of a *curl* request to a running server instance of this API:
 ```
-curl -X POST https://localhost:8080/messages \
+curl -X POST http://localhost:8080/messages \
 -H 'Content-Type: application/json' \
--d '{"recipient":"31612345678", "originator":"YourName", "body": "Test message"}'
+-d '{"recipient":"31612345678", "originator":"YourName", "message": "Test message"}'
 ```
 A successful request should receive as a response a MessageBird message object like the one below:
 ```
