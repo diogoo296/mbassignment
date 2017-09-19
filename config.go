@@ -10,10 +10,12 @@ import (
 
 type Config struct {
   MbApiKey map[string]string 
+  MaxCsmsParts int
 }
 
 func LoadConfig() *Config {
-  var config *Config
+  config := &Config{ 
+    MbApiKey: make(map[string]string), MaxCsmsParts: 255 }
   _, filename, _, ok := runtime.Caller(1)
   if !ok {
     log.Println("Error loading config file")

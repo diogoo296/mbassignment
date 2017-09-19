@@ -45,7 +45,7 @@ func TestApiThroughput(t *testing.T) {
   p := Payload{
     Originator: "Diogo",
     Recipient: "5531988174420",
-    Message: strings.Repeat("a", 1400), // 10 messages
+    Message: strings.Repeat("a", 1377), // 9 messages
   }
 
   result, _ := MbApiInstance.SendMessage(p);

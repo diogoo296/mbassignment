@@ -31,9 +31,10 @@ func InitTextHelper(msg string) (*TextHelper, error) {
   th.setPartSize()
   th.splitBody()
 
-  if th.NumParts > 255 {
+  config := LoadConfig()
+  if config != nil && th.NumParts > config.MaxCsmsParts {
     return nil, errors.New(
-      "Message number of parts is above 255")
+      "Message number of parts is above the maximum allowed")
   }
 
   return th, nil

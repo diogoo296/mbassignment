@@ -21,6 +21,13 @@ func TestLoadConfig(t *testing.T) {
     t.Error(
       "Expected config.MbApiKey to be set for current ENV")
   }
+
+  if config.MaxCsmsParts < 1 || config.MaxCsmsParts > 255 {
+    
+    t.Errorf(
+      "Expected 1 <= config.MaxCsmsParts <= 255; Got %d",
+      config.MaxCsmsParts)
+  }
 }
 
 func TestGetEnv(t *testing.T) {
