@@ -4,6 +4,7 @@ import (
   "fmt"
   "log"
   "time"
+  "math/rand"
   "github.com/messagebird/go-rest-api"
 )
 
@@ -24,10 +25,11 @@ func initMbApi() *mbApi {
   var mbapi *mbApi
   config := LoadConfig()
   if config != nil {
+    rand.Seed(time.Now().UTC().UnixNano())
     mbapi = &mbApi{
       Throttle: time.Tick(time.Second * THROUGHPUT),
       Client: messagebird.New(config.MbApiKey[GetEnv()]),
-      RefNo: 0,
+      RefNo: rand.Intn(256),
     }
   }
   return mbapi
