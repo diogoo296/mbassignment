@@ -17,7 +17,7 @@ go get github.com/messagebird/go-rest-api
 
 ### 1.2. Setup the config file
 
-Go to the project folder and fill the configurations in *config.json* file. This file should looks like the example below:
+Go to the project root folder and fill the configurations in *config.json* file. This file should looks like the example below:
 ```
 {
   "MbApiKey": {
@@ -28,8 +28,9 @@ Go to the project folder and fill the configurations in *config.json* file. This
 }
 ```
 Here is a quick description about the parameters:
-* **MbApiKey:** Your MessageBird REST API key. The *development* entry corresponds to the *Mode test* key and the *production key* is to the *Mode live* key. Notice that it's not required to setup both of them, but the application will not work properly if it's running in a environment with the correspondent key not set.
-* **MaxCsmsParts:** Maximum number of concatenated SMS parts. Following MessageBird Dashboard Quick Send interface, it was initially set to 9 but it is not a mandatory parameter and, if removed from the configuration, it **will be set to 255** due to the limitation of number of parts that can be encoded in a CSMS UDH. Must be **bewteen 0 and 255**.
+
+* **MbApiKey:** Your MessageBird REST API key. The *development* entry corresponds to the *Mode test* key and the *production key* to the *Mode live* key. Notice that it's not required to setup both of them, but the application will not work properly if it's running in a environment with the correspondent key not set.
+* **MaxCsmsParts:** Maximum number of concatenated SMS parts. Following MessageBird Dashboard Quick Send interface, it was initially set to 9 but it is not a mandatory parameter and, if removed from the configuration, it **will be set to 255** automatically due to the limitation of number of parts that can be encoded in a CSMS UDH. Must be **bewteen 0 and 255**.
 
 At last, you can check if your configuration file is fine by running the command `go test -run TestLoadConfig`.
 
@@ -37,7 +38,7 @@ At last, you can check if your configuration file is fine by running the command
 
 Build the project by typing the command `go build`, which will generate the bynary file `mbassignment`.
 
-To run the API, somply type `./mbassignment` in your terminal. If the project is running properly, the API will be up and running at `localhost:8080` and you will see a message like this one:
+To run the API, simply type `./mbassignment` in your terminal. If the project is running properly, the API will be up and running at `localhost:8080` and you will see a message like this one:
 ```
 2017/09/17 10:56:01 ENV: development
 2017/09/17 10:56:01 Server started!
@@ -68,7 +69,7 @@ curl -X POST http://localhost:8080/messages \
 -H 'Content-Type: application/json' \
 -d '{"recipient":"31612345678", "originator":"YourName", "message": "Test message"}'
 ```
-A successful request should receive as a response a MessageBird message object like the one below:
+A successful request should receive as a response a [MessageBird message object](https://developers.messagebird.com/docs/messaging#messaging-object) like the one below:
 ```
 [{"Id":"5e404e4fef8249da98bdd5cfcc0ce2d6","HRef":"https://rest.messagebird.com/messages/5e404e4fef8249da98bdd5cfcc0ce2d6","Direction":"mt","Type":"sms","Originator":"YourName","Body":"Test message","Reference":"","Validity":null,"Gateway":10,"TypeDetails":{},"DataCoding":"plain","MClass":1,"ScheduledDatetime":null,"CreatedDatetime":"2017-09-17T14:42:30Z","Recipients":{"TotalCount":1,"TotalSentCount":1,"TotalDeliveredCount":0,"TotalDeliveryFailedCount":0,"Items":[{"Recipient":31612345678,"Status":"sent","StatusDatetime":"2017-09-17T14:42:30Z"}]},"Errors":null}]
 ```
@@ -77,9 +78,9 @@ A successful request should receive as a response a MessageBird message object l
 
 ### 3.1. Datacoding and message length
 
-Considering MessageBird SMS datacoding types - plain and unicode, a SMS body was classified as plain if contained in [this table](https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_.2F_GSM_03.38) and unicode if otherwise. Moreover, the number of messages sent according to the total number of characters and datacoding follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-). 
+Considering MessageBird SMS datacoding types - plain and unicode, the SMS body was classified as plain if all its characters were contained in [this GSM 03.38 table](https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_.2F_GSM_03.38) and unicode if at least one character was not contained. Moreover, the number of messages sent according to the total number of characters and datacoding follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-). 
 
-At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `â‚¬`. 
+At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `€`. 
 
 ### 3.2. UDH Reference Number
 
