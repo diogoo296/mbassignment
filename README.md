@@ -75,11 +75,19 @@ A successful request should receive as a response a MessageBird message object l
 
 ## 3. Implementation notes
 
-### 3.1. Characters and message length
+### 3.1. Datacoding and message length
 
-Considering the concatenated SMS limitations and differences between GSM 03.38 characters and unicode characters, the number of messages sent follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-).
+Considering MessageBird SMS datacoding types - plain and unicode, a SMS body was classified as plain if contained in [this table](https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_.2F_GSM_03.38) and unicode if otherwise. Moreover, the number of messages sent according to the total number of characters and datacoding follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-). 
 
-For more about GSM 03.38 characters and which ones from this set counts as 2 characters in a message, check out [this article](https://support.messagebird.com/hc/en-us/articles/208739765-Which-special-characters-count-as-two-characters-in-a-text-message-).
+At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `€`. 
+
+### 3.2. UDH Reference Number
+
+As described in [this article in Wikipedia](https://en.wikipedia.org/wiki/Concatenated_SMS), the UDH reference number must be the same for all SMS parts in the CSMS and can be composed by either 1 or 2 octets. For the sake of simplicity, this assignment uses a 8-bit reference number.
+
+The reference number generation was implemented as a sequential number starting as a random number in the interval [0, 256) in order to avoid repeated numbers when restarting the application. This number is incremented for every new group of CSMSes sent and is reset to zero when its value is greater than its maximum value (255).
+
+**Note:** I have considered that a more sophisticated solution would make the assignment more complex while not avoiding the possibility of reference number colision since there is no guarantee of when the message will be delivered and if it will be in fact delivered.
 
 ## 4. Known issues
 
