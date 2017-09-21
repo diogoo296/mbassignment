@@ -10,8 +10,7 @@ Before anything else, please install or check the current installed version of *
 
 Clone this project and install its single dependency ([go-rest-api](https://github.com/messagebird/go-rest-api)):
 ```
-cd $GOPATH/src/github.com
-git clone git@github.com:diogoo296/mbassignment.git
+go get github.com/diogoo296/mbassignment
 go get github.com/messagebird/go-rest-api
 ```
 
