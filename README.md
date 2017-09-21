@@ -80,14 +80,16 @@ A successful request should receive as a response a [MessageBird message object]
 
 Here's a quick description of the project files/modules:
 
-* **main.go:** Instantiates and runs the HTTP server.
-* **config.go:** Loads the configurations in *config.json*.
-* **router.go:** Defines the application routes and their correspondent handlers.
-* **handlers.go:** Defines the methods which will handle the server requests and their responses.
-* **validator.go:** Validates the request parameters.
-* **mbapi.go:** A wrapper for MessageBird API client which deals with the message sending and the API throughput.
-* **text_helper:** A helper to find out the message *datacoding* and to split the message body when necessary with its proper length.
-* **\*_test.go:** Unit tests for its corresponding module.
+| File   | Description |
+|------------|-------------|
+| **main.go**  | Instantiates and runs the HTTP server. |
+| **config.go** | Loads the configurations in *config.json* |
+| **router.go** | Defines the application routes and their correspondent handlers. |
+| **handlers.go** | Defines the methods which will handle the server requests and their responses. |
+| **validator.go:** | Validates the request parameters. |
+| **mbapi.go** | A wrapper for MessageBird API client which deals with the message sending and the API throughput. |
+| **text_helper:** | A helper to find out the message *datacoding* and to split the message body when necessary with its proper length.|
+| **\*_test.go** | Unit tests for its corresponding module. |
 
 ### 3.2. Datacoding and message length
 
