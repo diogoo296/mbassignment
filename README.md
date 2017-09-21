@@ -11,7 +11,7 @@ Before anything else, please install or check the current installed version of *
 Clone this project and install its single dependency ([go-rest-api](https://github.com/messagebird/go-rest-api)):
 ```
 cd $GOPATH/src/github.com
-git clone git@bitbucket.org:diogo296/mbassignment.git
+git clone git@bitbucket.org:diogoo296/mbassignment.git
 go get github.com/messagebird/go-rest-api
 ```
 
@@ -80,20 +80,22 @@ A successful request should receive as a response a [MessageBird message object]
 
 Here's a quick description of the project files/modules:
 
-* **main.go:** Instantiates and runs the HTTP server.
-* **config.go:** Loads the configurations in *config.json*.
-* **router.go:** Defines the application routes and their correspondent handlers.
-* **handlers.go:** Defines the methods which will handle the server requests and their responses.
-* **validator.go:** Validates the request parameters.
-* **mbapi.go:** A wrapper for MessageBird API client which deals with the message sending and the API throughput.
-* **text_helper:** A helper to find out the message *datacoding* and to split the message body when necessary with its proper length.
-* **\*_test.go:** Unit tests for its corresponding module.
+| File   | Description |
+|------------|-------------|
+| **main.go**  | Instantiates and runs the HTTP server. |
+| **config.go** | Loads the configurations in *config.json* |
+| **router.go** | Defines the application routes and their correspondent handlers. |
+| **handlers.go** | Defines the methods which will handle the server requests and their responses. |
+| **validator.go:** | Validates the request parameters. |
+| **mbapi.go** | A wrapper for MessageBird API client which deals with the message sending and the API throughput. |
+| **text_helper:** | A helper to find out the message *datacoding* and to split the message body when necessary with its proper length.|
+| **\*_test.go** | Unit tests for its corresponding module. |
 
 ### 3.2. Datacoding and message length
 
 Considering MessageBird SMS datacoding types - plain and unicode, the SMS body was classified as plain if all its characters were contained in [this GSM 03.38 table](https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_.2F_GSM_03.38) and unicode if at least one character was not contained. Moreover, the number of messages sent according to the total number of characters and datacoding follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-). 
 
-At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `€`.
+At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `â‚¬`.
 
 ### 3.3. UDH Reference Number
 
