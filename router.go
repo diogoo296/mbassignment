@@ -24,6 +24,7 @@ type Router struct {
   Routes []Route
 }
 
+// Link endpoints to handlers
 func (router *Router) MapRoutes() {
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     found := false

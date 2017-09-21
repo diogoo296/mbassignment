@@ -40,6 +40,7 @@ func InitTextHelper(msg string) (*TextHelper, error) {
   return th, nil
 }
 
+// Checks if body contains non GSM characters
 func (th *TextHelper) setPlainText() {
   for _, r := range th.Body {
     if !specialRunes.contains(r) && !gsmRunes.contains(r) {
@@ -50,6 +51,7 @@ func (th *TextHelper) setPlainText() {
   th.PlainText = true
 }
 
+// Set message part size according to datacoding and body len
 func (th *TextHelper) setPartSize() {
   if th.PlainText {
     th.PartSize = PLAIN_SMS_MAX_LEN
@@ -64,6 +66,7 @@ func (th *TextHelper) setPartSize() {
   }
 }
 
+// Counts special runes as 2 chars if plain text
 func (th *TextHelper) countChars() {
   for _, r := range th.Body {
     if specialRunes.contains(r) && th.PlainText {
@@ -78,6 +81,7 @@ func (th *TextHelper) concat(str string, r rune) string {
   return fmt.Sprintf("%s%s", str, string(r))
 }
 
+// Split the message parts
 func (th *TextHelper) splitBody() {
   total, part := 0, ""
 

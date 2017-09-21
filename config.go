@@ -13,6 +13,7 @@ type Config struct {
   MaxCsmsParts int
 }
 
+// Loads config.json and return a Config object
 func LoadConfig() *Config {
   config := &Config{ 
     MbApiKey: make(map[string]string), MaxCsmsParts: 255 }

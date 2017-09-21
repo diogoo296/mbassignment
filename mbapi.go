@@ -58,6 +58,7 @@ func (mbapi *mbApi) splitMessage(body string) (
   }
   log.Printf("%#v", tHelper)
 
+  // Returns a single message
   if tHelper.NumParts == 1 {
     params := &messagebird.MessageParams{ DataCoding: "auto" }
     return []message{
@@ -67,6 +68,7 @@ func (mbapi *mbApi) splitMessage(body string) (
   var messages []message
   refNo := mbapi.getRefNo()
 
+  // Returns N binary messages with the proper UDH
   for i := 0; i < tHelper.NumParts; i++ {
     typeDetails := make(messagebird.TypeDetails)
     typeDetails["udh"] = buildUDH(
@@ -97,7 +99,7 @@ func (mbapi *mbApi) SendMessage(p Payload) (
   }
 
   for _, msg := range messages {
-    <-mbapi.Throttle
+    <-mbapi.Throttle  // throughput
     log.Printf("Request: %s", time.Now().String())
     row, err := mbapi.Client.NewMessage(
       p.Originator, []string{p.Recipient},
