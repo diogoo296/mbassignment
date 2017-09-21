@@ -27,6 +27,10 @@ func TestCheckPayloadMessage(t *testing.T) {
   // Test empty message
   expectKeyError(validator.CheckPayload(p), "message", t)
 
+  // Test whitespaces message
+  p.Message = " \n     "
+  expectKeyError(validator.CheckPayload(p), "message", t)
+
   // Test not empty message
   p.Message = "Testing 1234 []()"
   expectNilError(validator.CheckPayload(p), t)
