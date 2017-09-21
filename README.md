@@ -11,7 +11,7 @@ Before anything else, please install or check the current installed version of *
 Clone this project and install its single dependency ([go-rest-api](https://github.com/messagebird/go-rest-api)):
 ```
 cd $GOPATH/src/github.com
-git clone git@bitbucket.org:diogo296/mbassignment.git
+git clone git@bitbucket.org:diogoo296/mbassignment.git
 go get github.com/messagebird/go-rest-api
 ```
 
@@ -93,7 +93,7 @@ Here's a quick description of the project files/modules:
 
 Considering MessageBird SMS datacoding types - plain and unicode, the SMS body was classified as plain if all its characters were contained in [this GSM 03.38 table](https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_.2F_GSM_03.38) and unicode if at least one character was not contained. Moreover, the number of messages sent according to the total number of characters and datacoding follows the table described [in this article](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-is-1-SMS-Message-). 
 
-At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `€`.
+At last, the following characters were considered as 2 characters in a plain message: `\n`, `\`, `^`, `~`, `[`, `]`, `{`, `}`, `|`, `~`, `â‚¬`.
 
 ### 3.3. UDH Reference Number
 
