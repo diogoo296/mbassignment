@@ -8,7 +8,7 @@ import (
 )
 
 var shortPlainMsg string = strings.Repeat("a", 10)
-var shortSpecialMsg string = "\f\\~[]{}|€"
+var shortSpecialMsg string = "\n\\~[]{}|€"
 var maxShortPlainMsg string = strings.Repeat("a", 160)
 var longPlainMsg string = strings.Repeat("a", 170)
 var veryLongPlainMsg string = strings.Repeat("a", 612)

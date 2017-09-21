@@ -122,7 +122,6 @@ https://github.com/xlab/at/blob/master/pdu/7bit.go#L30
 */
 // Counts as 2 characters
 var specialRunes = gsmTable{
-  0x000C, /* FORM FEED */
   0x005E, /* CIRCUMFLEX ACCENT */
   0x007B, /* LEFT CURLY BRACKET */
   0x007D, /* RIGHT CURLY BRACKET */
@@ -137,6 +136,7 @@ var specialRunes = gsmTable{
 
 // Counts as 1 character
 var gsmRunes = gsmTable{
+             0x000C, /* FORM FEED */
   /* 0x00 */ 0x0040, /* COMMERCIAL AT */
   /* 0x01 */ 0x00A3, /* POUND SIGN */
   /* 0x02 */ 0x0024, /* DOLLAR SIGN */

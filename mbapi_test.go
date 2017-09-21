@@ -42,10 +42,15 @@ func TestTotalSentMessages(t *testing.T) {
 
 func TestApiThroughput(t *testing.T) {
   log.SetOutput(ioutil.Discard)
+  parts := LoadConfig().MaxCsmsParts
+  if parts > 9 {
+    parts = 9
+  }
+
   p := Payload{
     Originator: "Diogo",
     Recipient: "5531988174420",
-    Message: strings.Repeat("a", 1377), // 9 messages
+    Message: strings.Repeat("a", PLAIN_CSMS_MAX_LEN * parts),
   }
 
   result, _ := MbApiInstance.SendMessage(p);
@@ -53,7 +58,7 @@ func TestApiThroughput(t *testing.T) {
     if diff := result[i].CreatedDatetime.Sub(
       *result[i-1].CreatedDatetime).Seconds();
     diff < 1.0 {
-      t.Errorf("Expected diff >= 1; Got: %d", diff)
+      t.Errorf("Expected diff >= 1; Got: %f", diff)
     }
   }
 }
